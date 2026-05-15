@@ -21,11 +21,11 @@ jobs:
             target: x86_64-apple-darwin
             platform_dir: npm-darwin-x64
             bin: email-mcp
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             platform_dir: npm-linux-x64
             bin: email-mcp
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             target: aarch64-unknown-linux-gnu
             platform_dir: npm-linux-arm64
             bin: email-mcp
