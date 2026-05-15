@@ -1,0 +1,19 @@
+{
+  "name": "@kembec/email-mcp-win32-x64",
+  "version": "0.1.0",
+  "description": "email-mcp binary for win32 x64",
+  "os": ["win32"],
+  "cpu": ["x64"],
+  "bin": {
+    "email-mcp": "bin/email-mcp.exe"
+  },
+  "files": [
+    "bin/email-mcp.exe",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kembec/email-mcp.git"
+  },
+  "license": "MIT"
+}

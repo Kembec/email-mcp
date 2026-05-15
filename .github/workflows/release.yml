@@ -1,0 +1,102 @@
+name: release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            target: aarch64-apple-darwin
+            platform_dir: npm-darwin-arm64
+            bin: email-mcp
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            platform_dir: npm-darwin-x64
+            bin: email-mcp
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            platform_dir: npm-linux-x64
+            bin: email-mcp
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            platform_dir: npm-win32-x64
+            bin: email-mcp.exe
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          brew uninstall rustup 2>/dev/null || true
+          rm -rf ~/.cargo ~/.rustup
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+            | sh -s -- -y --profile minimal --default-toolchain stable --no-modify-path
+          ~/.cargo/bin/rustup target add ${{ matrix.target }}
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - uses: dtolnay/rust-toolchain@stable
+        if: runner.os != 'macOS'
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+      - name: Build release binary
+        shell: bash
+        run: cargo build --release --locked --target ${{ matrix.target }}
+      - name: Stage binary
+        shell: bash
+        run: |
+          mkdir -p "${{ matrix.platform_dir }}/bin"
+          cp "target/${{ matrix.target }}/release/${{ matrix.bin }}" \
+             "${{ matrix.platform_dir }}/bin/${{ matrix.bin }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform_dir }}
+          path: ${{ matrix.platform_dir }}
+
+  publish:
+    name: publish to npm
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Restage artifacts into platform dirs
+        run: |
+          for d in npm-darwin-arm64 npm-darwin-x64 npm-linux-x64 npm-win32-x64; do
+            mkdir -p "$d/bin"
+            cp -r "artifacts/$d/bin/." "$d/bin/"
+          done
+      - name: Add README to packages
+        run: |
+          cp README.md npm/README.md
+          for d in npm-darwin-arm64 npm-darwin-x64 npm-linux-x64 npm-win32-x64; do
+            cp README.md "$d/README.md"
+          done
+      - name: Publish platform packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for d in npm-darwin-arm64 npm-darwin-x64 npm-linux-x64 npm-win32-x64; do
+            (cd "$d" && npm publish --provenance --access public)
+          done
+      - name: Publish main package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          cd npm && npm publish --provenance --access public

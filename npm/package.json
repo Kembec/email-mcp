@@ -1,0 +1,27 @@
+{
+  "name": "@kembec/email-mcp",
+  "version": "0.1.0",
+  "description": "Multi-account email MCP for Gmail, Outlook, and iCloud",
+  "bin": {
+    "email-mcp": "./index.js"
+  },
+  "main": "./index.js",
+  "files": [
+    "index.js",
+    "README.md"
+  ],
+  "optionalDependencies": {
+    "@kembec/email-mcp-darwin-arm64": "0.1.0",
+    "@kembec/email-mcp-darwin-x64": "0.1.0",
+    "@kembec/email-mcp-linux-x64": "0.1.0",
+    "@kembec/email-mcp-win32-x64": "0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kembec/email-mcp.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

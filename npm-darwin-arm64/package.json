@@ -1,0 +1,19 @@
+{
+  "name": "@kembec/email-mcp-darwin-arm64",
+  "version": "0.1.0",
+  "description": "email-mcp binary for darwin arm64",
+  "os": ["darwin"],
+  "cpu": ["arm64"],
+  "bin": {
+    "email-mcp": "bin/email-mcp"
+  },
+  "files": [
+    "bin/email-mcp",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kembec/email-mcp.git"
+  },
+  "license": "MIT"
+}
