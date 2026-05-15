@@ -55,6 +55,8 @@ pub struct AppState {
     // The Mutex serializes all reads and writes so concurrent tasks can't corrupt the file.
     accounts: Mutex<Vec<Account>>,
     pub pending_auths: Mutex<HashMap<String, PendingAuth>>,
+    // Background task handles (e.g. device code polling) that must finish before shutdown.
+    pub background_tasks: Mutex<Vec<tokio::task::JoinHandle<()>>>,
 }
 
 impl AppState {
@@ -78,6 +80,7 @@ impl AppState {
             config_dir,
             accounts: Mutex::new(accounts),
             pending_auths: Mutex::new(HashMap::new()),
+            background_tasks: Mutex::new(Vec::new()),
         })
     }
 

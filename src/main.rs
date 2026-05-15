@@ -40,8 +40,14 @@ async fn main() -> Result<()> {
         });
     }
 
-    // Wait for all in-flight requests to complete before exiting
+    // Wait for all in-flight MCP requests to complete
     while tasks.join_next().await.is_some() {}
+
+    // Wait for background tasks (e.g. device code polling) to complete
+    let bg: Vec<_> = state.background_tasks.lock().unwrap().drain(..).collect();
+    for handle in bg {
+        let _ = handle.await;
+    }
 
     Ok(())
 }

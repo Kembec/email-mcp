@@ -12,7 +12,7 @@ pub fn list() -> Value {
         },
         {
             "name": "auth_start",
-            "description": "Start OAuth2 authentication for a Gmail or Outlook account. Returns a URL to open in the browser; auth completes automatically when the user accepts.",
+            "description": "Start OAuth2 authentication for a Gmail or Outlook account. Gmail: opens a browser redirect flow. Outlook: uses device code flow (visit a URL and enter a short code). Auth completes automatically.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -174,10 +174,7 @@ async fn do_call(name: &str, args: Value, state: &Arc<AppState>) -> anyhow::Resu
             Ok(json!({
                 "content": [{
                     "type": "text",
-                    "text": format!(
-                        "Open this URL in your browser to authenticate:\n\n{}\n\nAuth will complete automatically when you accept. Use list_accounts to verify.",
-                        result.url
-                    )
+                    "text": result.message
                 }]
             }))
         }
