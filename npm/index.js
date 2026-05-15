@@ -5,6 +5,7 @@ const PLATFORMS = {
   'darwin-arm64': '@kembec/email-mcp-darwin-arm64',
   'darwin-x64':   '@kembec/email-mcp-darwin-x64',
   'linux-x64':    '@kembec/email-mcp-linux-x64',
+  'linux-arm64':  '@kembec/email-mcp-linux-arm64',
   'win32-x64':    '@kembec/email-mcp-win32-x64',
 };
 

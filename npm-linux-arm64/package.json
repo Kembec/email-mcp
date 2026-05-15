@@ -1,9 +1,9 @@
 {
-  "name": "@kembec/email-mcp-linux-x64",
+  "name": "@kembec/email-mcp-linux-arm64",
   "version": "0.1.1",
-  "description": "email-mcp binary for linux x64",
+  "description": "email-mcp binary for linux arm64",
   "os": ["linux"],
-  "cpu": ["x64"],
+  "cpu": ["arm64"],
   "bin": {
     "email-mcp": "bin/email-mcp"
   },
