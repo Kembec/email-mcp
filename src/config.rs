@@ -61,9 +61,13 @@ pub struct AppState {
 
 impl AppState {
     pub fn new() -> Result<Self> {
-        let config_dir = dirs::config_dir()
-            .unwrap_or_else(|| PathBuf::from("."))
-            .join("email-mcp");
+        let config_dir = if let Ok(dir) = std::env::var("EMAIL_MCP_CONFIG_DIR") {
+            PathBuf::from(dir)
+        } else {
+            dirs::config_dir()
+                .unwrap_or_else(|| PathBuf::from("."))
+                .join("email-mcp")
+        };
         std::fs::create_dir_all(&config_dir)?;
 
         let accounts_path = config_dir.join("accounts.json");
