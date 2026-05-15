@@ -1,6 +1,6 @@
 [package]
 name = "email-mcp"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "Multi-account email MCP for Gmail, Outlook, and iCloud"
 license = "MIT"

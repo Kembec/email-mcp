@@ -64,6 +64,7 @@ jobs:
           mkdir -p "${{ matrix.platform_dir }}/bin"
           cp "target/${{ matrix.target }}/release/${{ matrix.bin }}" \
              "${{ matrix.platform_dir }}/bin/${{ matrix.bin }}"
+          chmod +x "${{ matrix.platform_dir }}/bin/${{ matrix.bin }}" || true
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform_dir }}

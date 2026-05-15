@@ -27,6 +27,9 @@ try {
   process.exit(1);
 }
 
+// Ensure execute bit is set (npm unpack may strip it)
+try { require('fs').chmodSync(binPath, 0o755); } catch {}
+
 try {
   execFileSync(binPath, process.argv.slice(2), { stdio: 'inherit' });
 } catch (e) {
