@@ -1,5 +1,5 @@
 use crate::config::{Account, AppState, Provider};
-use crate::{gmail, oauth, outlook};
+use crate::{gmail, icloud, oauth, outlook};
 use serde_json::{json, Value};
 use std::sync::Arc;
 
@@ -215,7 +215,7 @@ async fn do_call(name: &str, args: Value, state: &Arc<AppState>) -> anyhow::Resu
             Ok(json!({
                 "content": [{
                     "type": "text",
-                    "text": format!("iCloud account '{}' added. Note: IMAP operations not yet implemented in v0.1.", account_id)
+                    "text": format!("iCloud account '{}' added successfully.", account_id)
                 }]
             }))
         }
@@ -257,7 +257,14 @@ async fn do_call(name: &str, args: Value, state: &Arc<AppState>) -> anyhow::Resu
                         .list_messages(folder, max)
                         .await?
                 }
-                Provider::ICloud => anyhow::bail!("iCloud IMAP not yet implemented in v0.1"),
+                Provider::ICloud => {
+                    let account = account;
+                    let email = account.email.ok_or_else(|| anyhow::anyhow!("iCloud account has no email"))?;
+                    let password = account.icloud_password.ok_or_else(|| anyhow::anyhow!("iCloud account has no app password"))?;
+                    icloud::ICloudClient::new(&email, &password)
+                        .list_messages(folder, max)
+                        .await?
+                }
             };
 
             Ok(json!({
@@ -286,7 +293,14 @@ async fn do_call(name: &str, args: Value, state: &Arc<AppState>) -> anyhow::Resu
                         .get_message(message_id)
                         .await?
                 }
-                Provider::ICloud => anyhow::bail!("iCloud IMAP not yet implemented in v0.1"),
+                Provider::ICloud => {
+                    let email = account.email.ok_or_else(|| anyhow::anyhow!("iCloud account has no email"))?;
+                    let password = account.icloud_password.ok_or_else(|| anyhow::anyhow!("iCloud account has no app password"))?;
+                    let uid: u32 = message_id.parse().map_err(|_| anyhow::anyhow!("iCloud message_id must be a numeric UID"))?;
+                    icloud::ICloudClient::new(&email, &password)
+                        .get_message(uid)
+                        .await?
+                }
             };
 
             Ok(json!({
@@ -318,7 +332,14 @@ async fn do_call(name: &str, args: Value, state: &Arc<AppState>) -> anyhow::Resu
                         .send_message(to, subject, body, cc)
                         .await?
                 }
-                Provider::ICloud => anyhow::bail!("iCloud SMTP not yet implemented in v0.1"),
+                Provider::ICloud => {
+                    let email = account.email.ok_or_else(|| anyhow::anyhow!("iCloud account has no email"))?;
+                    let password = account.icloud_password.ok_or_else(|| anyhow::anyhow!("iCloud account has no app password"))?;
+                    icloud::ICloudClient::new(&email, &password)
+                        .send_message(to, subject, body, cc)
+                        .await?;
+                    "sent".to_string()
+                }
             };
 
             Ok(json!({
@@ -351,7 +372,13 @@ async fn do_call(name: &str, args: Value, state: &Arc<AppState>) -> anyhow::Resu
                         .search(query, max)
                         .await?
                 }
-                Provider::ICloud => anyhow::bail!("iCloud search not yet implemented in v0.1"),
+                Provider::ICloud => {
+                    let email = account.email.ok_or_else(|| anyhow::anyhow!("iCloud account has no email"))?;
+                    let password = account.icloud_password.ok_or_else(|| anyhow::anyhow!("iCloud account has no app password"))?;
+                    icloud::ICloudClient::new(&email, &password)
+                        .search(query, max)
+                        .await?
+                }
             };
 
             Ok(json!({

@@ -23,7 +23,6 @@ fn pkce_challenge(verifier: &str) -> String {
 
 pub struct AuthStartResult {
     pub url: String,
-    pub account_id: String,
 }
 
 pub async fn start_oauth(
@@ -91,7 +90,7 @@ pub async fn start_oauth(
         }
     });
 
-    Ok(AuthStartResult { url: auth_url, account_id })
+    Ok(AuthStartResult { url: auth_url })
 }
 
 async fn handle_oauth_callback(

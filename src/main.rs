@@ -5,6 +5,7 @@ use tokio::task::JoinSet;
 
 mod config;
 mod gmail;
+mod icloud;
 mod mcp;
 mod oauth;
 mod outlook;
@@ -14,6 +15,7 @@ pub use config::AppState;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let _ = rustls::crypto::ring::default_provider().install_default();
     eprintln!("email-mcp starting");
 
     let state = Arc::new(AppState::new()?);
